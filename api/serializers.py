@@ -7,5 +7,5 @@ class TareaSerializer(serializers.ModelSerializer):
     """Serializer to map model instance into JSON format."""
     class Meta:
         model = Tarea
-        fields = ('id', 'title', 'description', 'created_at', 'updated_at',)
+        fields = ('id', 'title', 'description', 'created_at', 'updated_at', 'owner')
         read_only_fields = ('created_at', 'updated_at',)
