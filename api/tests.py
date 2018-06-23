@@ -31,7 +31,7 @@ class TareaViewTestCase(TestCase):
     def setUp(self):
         """Define the test client and other test variables."""
         self.client = APIClient()
-        self.user = User.objects.create(username='tosmak')
+        self.user = User.objects.create(username='tosmak', is_superuser=True)
         self.client.force_authenticate(user=self.user)
         self.tarea_data = {'title': 'some task', 'description': 'some task description', 'owner': self.user.id}
 

@@ -1,15 +1,27 @@
 # Create your views here.
-from rest_framework import viewsets, permissions
+from rest_framework import viewsets, permissions, mixins
 from .models import Tarea
 from .serializers import TareaSerializer
 
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
-from  .permissions import IsOwner
+from .permissions import IsOwner, AdminListPermission
 
 
-class TareaViewSet(viewsets.ModelViewSet):
+class TareaViewSet(mixins.CreateModelMixin,
+                                mixins.ListModelMixin,
+                                viewsets.GenericViewSet):
+
+    queryset = Tarea.objects.all()
+    serializer_class = TareaSerializer
+    permission_classes = (permissions.IsAuthenticated, AdminListPermission)
+
+
+class TareaDetailViewSet(mixins.RetrieveModelMixin,
+                         mixins.UpdateModelMixin,
+                         mixins.DestroyModelMixin,
+                         viewsets.GenericViewSet):
 
     queryset = Tarea.objects.all()
     serializer_class = TareaSerializer
