@@ -5,6 +5,7 @@ from datetime import datetime
 
 
 class Tarea(models.Model):
+    owner = models.ForeignKey('auth.User', related_name='tareas', on_delete=models.CASCADE)
     title = models.CharField(max_length=100,blank=False, unique=True)
     description = models.CharField(max_length=200, blank=True, null=True)
     created_at = models.DateTimeField(default=datetime.utcnow())

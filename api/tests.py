@@ -1,6 +1,6 @@
 from django.test import TestCase
 from rest_framework.test import APIClient
-
+from django.contrib.auth.models import User
 from .models import Tarea
 
 # Create your tests here.
@@ -13,7 +13,8 @@ class ModelTestCase(TestCase):
     def setUp(self):
         """It defines test clients and other variables"""
         self.tarea_title = "Test setup"
-        self.tarea = Tarea(title=self.tarea_title)
+        self.user = User.objects.create(username='tosmak')
+        self.tarea = Tarea(title=self.tarea_title, owner=self.user)
 
     def test_model_creates_a_tarea_successfully(self):
         """it checks if tarea model can create a task"""
@@ -30,7 +31,9 @@ class TareaViewTestCase(TestCase):
     def setUp(self):
         """Define the test client and other test variables."""
         self.client = APIClient()
-        self.tarea_data ={'title': 'some task', 'description': 'some task description'}
+        self.user = User.objects.create(username='tosmak')
+        self.client.force_authenticate(user=self.user)
+        self.tarea_data = {'title': 'some task', 'description': 'some task description', 'owner': self.user.id}
 
     def test_api_successfully_creates_a_tarea(self):
         self.response = self.client.post('/tareas/', self.tarea_data, format="json")
@@ -60,7 +63,7 @@ class TareaViewTestCase(TestCase):
     def test_api_successfully_update_a_tarea_title(self):
         api_response = self.client.post('/tareas/', self.tarea_data, format="json")
         tarea_id=api_response.data.get('id')
-        new_tarea_title={'title': 'title changed'}
+        new_tarea_title={'title': 'title changed', 'owner': self.user.id}
         self.response = self.client.put(f'/tareas/{tarea_id}/', new_tarea_title )
         self.assertEqual(self.response.data.get('title'), new_tarea_title.get('title'))
         self.assertEqual(self.response.status_code, 200)
@@ -68,7 +71,7 @@ class TareaViewTestCase(TestCase):
     def test_api_successfully_update_a_tarea_description(self):
         api_response = self.client.post('/tareas/', self.tarea_data, format="json")
         tarea_id=api_response.data.get('id')
-        new_tarea_description={'title': 'title changed'}
+        new_tarea_description={'title': 'title changed', 'owner': self.user.id}
         self.response = self.client.put(f'/tareas/{tarea_id}/', new_tarea_description )
         self.assertEqual(self.response.data.get('title'), new_tarea_description.get('title'))
         self.assertEqual(self.response.status_code, 200)
